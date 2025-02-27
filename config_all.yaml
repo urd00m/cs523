@@ -30,7 +30,7 @@ controlled_stack:
 # Level 0: no output
 # Level 1: coarse-grained log
 # Level 2: fine-grained log (debug)
-LogLevel: 1
+LogLevel: 2
 
 # Forward stored values to subsequent loads.
 STLForwarding: True

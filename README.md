@@ -10,3 +10,4 @@ repo for the cs523 course project
 * upgrade rules
 * gadget study --> scan form 6.6 to current linux version
 
+# This repo is built from the Inspectre project from VUSec. The original repo is here: https://github.com/vusec/inspectre-gadget/tree/main 

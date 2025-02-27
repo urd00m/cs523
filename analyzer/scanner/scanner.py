@@ -442,7 +442,6 @@ class Scanner:
             if not state.solver.satisfiable():
                 report_error(Exception(), hex(self.cur_state.addr), hex(0), error_type="ALIAS UNSAT")
 
-
         # Save this load in the angr state.
         state.globals[self.cur_id] = cur_load
         self.loads.append(cur_load)

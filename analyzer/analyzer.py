@@ -95,7 +95,7 @@ def analyse_gadget(proj, gadget_address, name, csv_filename, tfp_csv_filename, a
     l.info(f"Outputted {analysis_pipeline.n_final_tainted_function_pointers} tainted function pointers.")
 
 
-def run(binary, config_file, base_address, gadgets, cache_project, csv_filename="", tfp_csv_filename="", asm_folder="", symbol_binary=""):
+def run(binary, config_file, base_address, gadgets, cache_project, csv_filename="", tfp_csv_filename="", asm_folder=""):
     """
     Run the analyzer on a binary.
     """
@@ -114,16 +114,7 @@ def run(binary, config_file, base_address, gadgets, cache_project, csv_filename=
     l.info("Loading angr project...")
     proj   = load_angr_project(binary, base_address, cache_project)
 
-    if symbol_binary:
-        l.info("Loading symbol binary...")
-        symbol_proj = load_angr_project(symbol_binary, base_address, cache_project)
-
-        proj.loader.all_objects[0]._symbol_cache = symbol_proj.loader.all_objects[0]._symbol_cache
-        proj.loader.all_objects[0].symbols = symbol_proj.loader.all_objects[0].symbols
-        proj.loader.all_objects[0]._symbols_by_name = symbol_proj.loader.all_objects[0]._symbols_by_name
-        del symbol_proj
-
     # Run the Analyzer.
-    # TODO: Parallelize.
+    # TODO: make this parallel 
     for g in gadgets:
         analyse_gadget(proj, g[0], g[1], csv_filename, tfp_csv_filename, asm_folder)
