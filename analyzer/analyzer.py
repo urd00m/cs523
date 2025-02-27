@@ -81,7 +81,6 @@ def analyse_gadget(proj, gadget_address, name, csv_filename, tfp_csv_filename, a
     l.info(f"Found {len(s.transmissions)} potential transmissions.")
     l.info(f"Found {len(s.calls)} potential tainted function pointers.")
 
-
     # Step 3. Analyze found gadgets (if not analyzed during scanning)
     if not global_config['AnalyzeDuringScanning']:
 
