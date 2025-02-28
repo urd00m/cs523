@@ -225,7 +225,7 @@ class DepGraph:
             uncontrolled_annos = [a for a in get_annotations(expr) if isinstance(a, UncontrolledAnnotation)]
 
             if len(attacker_annos) + len(load_annos) + len(uncontrolled_annos) == 0:
-                print("TODO: something wrong is happening")
+                # print("TODO: something wrong is happening")
                 anno = UncontrolledAnnotation(f"unknown_{random.randint(0, 256)}")
                 uncontrolled_annos = [anno]
                 expr.annotate(anno)

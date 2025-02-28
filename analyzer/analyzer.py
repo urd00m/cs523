@@ -62,8 +62,6 @@ def load_angr_project(binary_file: str, base_address, use_pickle) -> angr.Projec
 
     return proj
 
-
-
 def analyse_gadget(proj, gadget_address, name, csv_filename, tfp_csv_filename, asm_folder):
     """
     Run the scanner from a single entrypoint and analyze the potential transmissions
@@ -95,7 +93,6 @@ def analyse_gadget(proj, gadget_address, name, csv_filename, tfp_csv_filename, a
     l.info(f"Outputted {analysis_pipeline.n_final_transmissions} transmissions.")
     l.info(f"Outputted {analysis_pipeline.n_final_tainted_function_pointers} tainted function pointers.")
 
-# TODO this is ugly 
 def job(args):
     proj, gadget, csv_filename, tfp_csv_filename, asm_folder = args 
     return analyse_gadget(proj, gadget[0], gadget[1], csv_filename, tfp_csv_filename, asm_folder)

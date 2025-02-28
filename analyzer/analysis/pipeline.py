@@ -69,27 +69,30 @@ class AnalysisPipeline:
             t.uuid = str(uuid.uuid4())
             t.name = self.name
             t.address = self.gadget_address
-            baseControlAnalysis.analyse(t)
-            pathAnalysis.analyse(t)
-            requirementsAnalysis.analyse(t)
 
-            try:
-                rangeAnalysis.analyse(t)
-            except Exception as e:
-                # TODO: In very few instances, our range analysis fails. Instead of
-                # interrupting the analysis right away, we want to continue to
-                # the next gadget. There are many reasons why the range analysis
-                # can fail, and some of them might be fixed.
-                # However, since the number of errors we encountered is very low,
-                # this has not been deemed to be a priority for now.
-                l.critical("Range analysis error: bailing out")
-                report_error(e, where="range_analysis", start_addr=hex(self.gadget_address), error_type="RANGE")
-                continue
+            # TODO readd these analysis back eventually
+
+        #     baseControlAnalysis.analyse(t)
+        #     pathAnalysis.analyse(t)
+        #     requirementsAnalysis.analyse(t)
+
+            # try:
+            #     rangeAnalysis.analyse(t)
+            # except Exception as e:
+            #     # TODO: In very few instances, our range analysis fails. Instead of
+            #     # interrupting the analysis right away, we want to continue to
+            #     # the next gadget. There are many reasons why the range analysis
+            #     # can fail, and some of them might be fixed.
+            #     # However, since the number of errors we encountered is very low,
+            #     # this has not been deemed to be a priority for now.
+            #     l.critical("Range analysis error: bailing out")
+            #     report_error(e, where="range_analysis", start_addr=hex(self.gadget_address), error_type="RANGE")
+            #     continue
 
             bitsAnalysis.analyse(t)
-            branchControlAnalysis.analyse(t)
+        #     branchControlAnalysis.analyse(t)
 
-            # Remove the dependency graph before printing.
+        #     # Remove the dependency graph before printing.
             t.properties["deps"] = None
 
             self.n_final_transmissions += 1
