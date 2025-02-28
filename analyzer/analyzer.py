@@ -11,6 +11,7 @@ import angr
 import claripy.ast.base
 import multiprocessing as mp
 import tqdm
+import logging
 
 from .scanner.scanner import Scanner
 from .analysis.pipeline import AnalysisPipeline
@@ -101,6 +102,8 @@ def run(binary, config_file, base_address, gadgets, cache_project, csv_filename=
     """
     Run the analyzer on a binary.
     """
+    # Disable Angr outputs
+    logging.getLogger('angr').setLevel('ERROR')
 
     # Simplify how symbols get printed.
     claripy.ast.base._unique_names = False
