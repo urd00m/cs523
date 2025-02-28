@@ -158,6 +158,7 @@ def append_to_csv(csv_filename, transmissions):
     """
     Output to a CSV, trying to preserve column order if the file is not empty.
     """
+    csv_filename = csv_filename + "_" + str(os.getpid()) + ".csv"
 
     # Read the CSV file to see if there are already existing entries.
     Path(os.path.dirname(csv_filename)).mkdir(parents=True, exist_ok=True)

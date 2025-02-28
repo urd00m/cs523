@@ -9,6 +9,8 @@ import yaml
 import pickle
 import angr
 import claripy.ast.base
+import multiprocessing as mp
+import tqdm
 
 from .scanner.scanner import Scanner
 from .analysis.pipeline import AnalysisPipeline
@@ -93,7 +95,11 @@ def analyse_gadget(proj, gadget_address, name, csv_filename, tfp_csv_filename, a
     l.info(f"Outputted {analysis_pipeline.n_final_transmissions} transmissions.")
     l.info(f"Outputted {analysis_pipeline.n_final_tainted_function_pointers} tainted function pointers.")
 
-
+# TODO this is ugly 
+def job(args):
+    proj, gadget, csv_filename, tfp_csv_filename, asm_folder = args 
+    return analyse_gadget(proj, gadget[0], gadget[1], csv_filename, tfp_csv_filename, asm_folder)
+    
 def run(binary, config_file, base_address, gadgets, cache_project, csv_filename="", tfp_csv_filename="", asm_folder=""):
     """
     Run the analyzer on a binary.
@@ -113,7 +119,11 @@ def run(binary, config_file, base_address, gadgets, cache_project, csv_filename=
     l.info("Loading angr project...")
     proj   = load_angr_project(binary, base_address, cache_project)
 
-    # Run the Analyzer.
-    # TODO: make this parallel 
-    for g in gadgets:
-        analyse_gadget(proj, g[0], g[1], csv_filename, tfp_csv_filename, asm_folder)
+    # Start the MP pool 
+    pool = mp.Pool(processes=global_config["NumJobs"])
+
+    # Parallize gadget search 
+    for _ in tqdm.tqdm(pool.imap_unordered(job, [(proj, gadget, csv_filename, tfp_csv_filename, asm_folder) for gadget in gadgets]), total=len(gadgets)-1):
+        pass
+
+    pool.close()

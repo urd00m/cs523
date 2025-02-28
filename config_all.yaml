@@ -30,7 +30,7 @@ controlled_stack:
 # Level 0: no output
 # Level 1: coarse-grained log
 # Level 2: fine-grained log (debug)
-LogLevel: 2
+LogLevel: 0
 
 # Forward stored values to subsequent loads.
 STLForwarding: True
@@ -46,3 +46,6 @@ DistributeShifts: True
 
 # Also look for tainted function pointers (i.e. dispatch gadgets).
 TaintedFunctionPointers: True
+
+# Number of parallel jobs
+NumJobs: 20 
