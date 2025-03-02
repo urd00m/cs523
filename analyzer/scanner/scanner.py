@@ -569,7 +569,7 @@ class Scanner:
 
         # process the TFP
         self.check_tfp(state, func_ptr_reg, func_ptr_ast)
-        # check if it is also a transmission
+        # check if it is also a transmission (TODO why check if this is a transmission?)
         self.check_transmission(func_ptr_ast, TransmitterType.CODE_LOAD, state)
 
         # Stop exploration here
