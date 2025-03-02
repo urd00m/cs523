@@ -48,4 +48,4 @@ DistributeShifts: True
 TaintedFunctionPointers: True
 
 # Number of parallel jobs
-NumJobs: 20 
+NumJobs: 15 
