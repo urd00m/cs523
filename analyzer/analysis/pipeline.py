@@ -72,9 +72,9 @@ class AnalysisPipeline:
 
             # TODO readd these analysis back eventually
 
-            # baseControlAnalysis.analyse(t)
-            # pathAnalysis.analyse(t)
-            # requirementsAnalysis.analyse(t)
+            baseControlAnalysis.analyse(t)
+            pathAnalysis.analyse(t)
+            requirementsAnalysis.analyse(t)
 
             try:
                 rangeAnalysis.analyse(t)
