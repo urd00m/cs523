@@ -6,13 +6,50 @@ import argparse
 import csv
 import subprocess
 import os
-
-from analyzer import analyzer, reasoner
+from pathlib import Path
+import shutil
+import multiprocessing as mp
+from analyzer import reasoner, analyzer
+from analyzer.shared.config import *
+import tqdm
 
 def run_reasoner(args):
     reasoner.run(args.csv_in, args.csv_out)
 
+def analyzer_job(entrypoint):
+    gadget_address = entrypoint[0]
+    gadget_name = entrypoint[1]
+
+    logfile = open(f"{args.output}/logs/out_{gadget_name}-{gadget_address}.log", "w")
+    gadgetfile = f"{args.output}/gadgets/{gadget_name}-{gadget_address}.csv"
+    tfpfile = f"{args.output}/tfps/{gadget_name}-{gadget_address}.csv"
+
+    # Parallize everything 
+    cmd = [
+        'timeout', '360', 
+        'python3', '-m analyzer.analyzer',
+        args.binary,
+        args.config,
+        '0',
+        gadget_address,
+        gadget_name, 
+        '--csv_filename', gadgetfile,
+        '--tfp_csv_filename', tfpfile,
+        '--asm_folder', f"{args.output}/asm/"
+    ]
+
+    res = subprocess.run([' '.join(cmd)], shell=True, stdout=subprocess.PIPE, stderr=logfile, check=False)
+    logfile.write(f"Exited with code {res.returncode}")
+    logfile.close()
+
+    with open(args.output + "/finished.txt", "a") as f:
+        finished = f"addr: {gadget_address}    name: {gadget_name} "
+        # print(finished)
+        f.write(finished)
+
 def run_analyzer(args):
+    # Load config
+    analyzer.load_config(args.config)
 
     # Parse entrypoint list
     file = open(args.address_list, "r")
@@ -23,14 +60,26 @@ def run_analyzer(args):
         exit(-1)
     parsed_entrypoints = [[int(x[0], 16), str(x[1]).strip()] for x in entrypoints]
 
-    analyzer.run(binary=args.binary,
-                 config_file=args.config,
-                 base_address=0x0,
-                 gadgets=parsed_entrypoints,
-                 cache_project=args.cache_project,
-                 csv_filename=args.output,
-                 tfp_csv_filename=args.tfp_output,
-                 asm_folder=args.asm)
+    # Prepare output folder
+    out_folder = args.output
+    gadget_folder=out_folder + "/gadgets"
+    tfp_folder=out_folder + "/tfps"
+    log_folder=out_folder + "/logs"
+    asm_folder=out_folder + "/asm"
+    outpath = Path(out_folder)
+    if outpath.exists() and outpath.is_dir():
+        shutil.rmtree(outpath)
+    outpath.mkdir(parents=True, exist_ok=True)
+    Path(tfp_folder).mkdir(parents=True, exist_ok=True)
+    Path(log_folder).mkdir(parents=True, exist_ok=True)
+    Path(asm_folder).mkdir(parents=True, exist_ok=True)
+    open('fail.txt', 'a').close()
+
+    # Make pool
+    pool = mp.Pool(processes=global_config['NumJobs'])
+    for _ in tqdm.tqdm(pool.imap_unordered(analyzer_job, entrypoints), total=len(entrypoints)):
+        pass
+    pool.close()
 
 if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description='cs523 project')
@@ -46,12 +95,10 @@ if __name__ == '__main__':
     analyzer_args.add_argument('--address-list', default='', help='read entrypoints from a file with the format <HEX_ADDRESS>,<NAME> (you can choose any name)')
 
     # Optional args. (eliminate)
-    analyzer_args.add_argument('--cache-project', action='store_true', help='load the angr project from a pickle named <BINARY>.angr, or create one if it does not exist')
+    # analyzer_args.add_argument('--cache-project', action='store_true', help='load the angr project from a pickle named <BINARY>.angr, or create one if it does not exist')
 
     # Outputs TODO make it so you just need to specify output folder instead of all three folders 
     analyzer_args.add_argument('--output', required=False, default='', help='output all found gadgets to a CSV')
-    analyzer_args.add_argument('--tfp-output', required=False, default='', help='output all found dispatch gadgets to a CSV')
-    analyzer_args.add_argument('--asm', required=False, default='', help='output an annotated ASM file for each gadget to the specified folder')
 
     # Run the analyzer 
     analyzer_args.set_defaults(func=run_analyzer)
