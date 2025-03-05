@@ -567,6 +567,10 @@ def run(in_csv, out_csv):
     df = pd.read_csv(StringIO(data), delimiter=';')
     # df.fillna(0, inplace=True)
 
+    # Remove bad transmitted_secret_expr and make sure all things are strs
+    df = df.dropna(subset=['transmitted_secret_expr'])
+    # df = df.astype(str)
+
     integer_cols = ['base_range_max',
                     'base_range_min',
                     'base_range_stride',
@@ -587,6 +591,11 @@ def run(in_csv, out_csv):
                     'base_range_w_branches_min',
                     'base_range_w_branches_stride',
                     'base_range_w_branches_window',
+                    # 'independent_base_range_stride',
+                    # 'independent_base_range_window',
+                    # "independent_base_size",
+                    # 'independent_base_range_max',
+                    # 'independent_base_range_min',
                     'independent_base_range_w_branches_max',
                     'independent_base_range_w_branches_min',
                     'independent_base_range_w_branches_stride',
@@ -596,7 +605,11 @@ def run(in_csv, out_csv):
                     'secret_address_range_w_branches_min',
                     'secret_address_range_w_branches_window',
                     'transmitted_secret_range_w_branches_max',
-                    'transmitted_secret_range_w_branches_min'
+                    # 'transmitted_secret_range_w_branches_min',
+                    # "transmitted_secret_range_max",
+                    # "transmitted_secret_range_min",
+                    # 'transmitted_secret_range_window',
+                    # "transmitted_secret_range_w_branches_window"
                     ]
 
     # Transform columns.
