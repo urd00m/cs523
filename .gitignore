@@ -5,3 +5,4 @@ __pycache__/
 fail.txt
 data/
 linux/
+output_all/
