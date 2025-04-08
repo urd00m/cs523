@@ -16,6 +16,11 @@ for tag in "${tags_to_check[@]}"; do
     echo Starting tag: $tag
 
     touch output_all/reason/log_$tag.txt
-    # TODO need to aggregate everything together
-    time ./vigilante reason output_all/out_$tag/  &> output_all/reason/log_$tag.txt
+    
+    python3 data_aggregator.py output_all/out_$tag/gadgets
+
+    split -l $(($(wc -l < output_all/out_$tag/gadgets/combined.csv) / 2)) output_all/out_$tag/gadgets/combined.csv combined_
+
+    time ./vigilante reason output_all/out_$tag/gadgets/combined_aa.csv output_all/out_$tag/reason_a.txt &> output_all/reason/log_$tag_a.txt
+    time ./vigilante reason output_all/out_$tag/gadgets/combined_ab.csv output_all/out_$tag/reason_b.txt &> output_all/reason/log_$tag_b.txt
 done

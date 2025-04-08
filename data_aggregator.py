@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import sys
 
 # Code credits: ChatGPT generated the baseline version 
 # I modified it to be better and removed bugs
@@ -39,8 +40,14 @@ def aggregate_csvs(folder_path, output_filename="combined.csv"):
     combined_df.to_csv(output_path, index=False, sep=";")
 
 if __name__ == '__main__':
-    # TODO use argparse instead of input
-    folder_path = input("Enter the path to the folder containing CSV files: ")
+    # folder_path = input("Enter the path to the folder containing CSV files: ")
+    if len(sys.argv) != 2:
+        print("Usage: python data_aggregator.py <folder_path>")
+        sys.exit(1)
+
+    folder_path = sys.argv[1]
+    print(f"Running agg on {folder_path}")
+
     try:
         aggregate_csvs(folder_path)
         print(f"Successfully combined all CSVs in '{folder_path}' into 'combined.csv'")
